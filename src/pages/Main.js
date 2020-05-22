@@ -9,7 +9,9 @@ import {
   Keyboard,
 } from 'react-native';
 
-export default function Main() {
+export default function Main({ route }) {
+  const { user } = route.params;
+  const { password } = route.params;
   const [listData, setListData] = useState([
     { title: 'oi', key: '0' },
     { title: 'cm vai', key: '1' },
@@ -19,6 +21,8 @@ export default function Main() {
   return (
     <View style={styles.container}>
       <Text>Main screen</Text>
+      <Text>{user}</Text>
+      <Text>{password}</Text>
     </View>
   );
 }

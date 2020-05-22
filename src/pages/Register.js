@@ -6,13 +6,46 @@ import {
   TouchableOpacity,
   Keyboard,
   KeyboardAvoidingView,
+  ToastAndroid,
   TextInput,
   StatusBar,
+  Alert,
 } from 'react-native';
+
+import auth from '@react-native-firebase/auth';
 
 export default function Resgister({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  function createUser() {
+    auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(() => {
+        Keyboard.dismiss();
+        ToastAndroid.show(
+          'Novo usuário criado, faça seu login!',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+        setEmail('');
+        setPassword('');
+        navigation.navigate('Login');
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          alert('Esse usuario ja existe');
+          setEmail('');
+          setPassword('');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          alert('Esse email é inválido, tente outro');
+          setEmail('');
+          setPassword('');
+        }
+      });
+  }
 
   return (
     <View style={styles.container}>
@@ -31,13 +64,24 @@ export default function Resgister({ navigation }) {
         <Text style={styles.registerAlternativeText}>Ou</Text>
 
         <View style={styles.inputs}>
-          <TextInput placeholder="Email" style={styles.inputField} />
-          <TextInput placeholder="Senha" style={styles.inputField} />
+          <TextInput
+            placeholder="Email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            style={styles.inputField}
+            value={email}
+            onChangeText={text => setEmail(text)}
+          />
+          <TextInput
+            placeholder="Senha"
+            secureTextEntry
+            style={styles.inputField}
+            value={password}
+            onChangeText={text => setPassword(text)}
+          />
         </View>
         <View style={styles.interactionButtons}>
-          <TouchableOpacity
-            style={styles.registerButton}
-            onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity style={styles.registerButton} onPress={createUser}>
             <Text style={styles.registerButtonText}>Criar conta</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -59,12 +103,18 @@ const styles = StyleSheet.create({
   // Texts
   textArea: {
     flex: 3,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     margin: 4,
     padding: 10,
   },
-  signupText: {},
-  signupWord: {},
+  signupText: {
+    fontSize: 26,
+    fontWeight: '700',
+  },
+  signupWord: {
+    fontSize: 72,
+    fontWeight: 'bold',
+  },
 
   // InteractionArea
   interactionArea: {
@@ -74,19 +124,34 @@ const styles = StyleSheet.create({
 
   // InteractionArea - googleRegister
   googleRegister: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  googleButton: {},
-  googleText: {},
+  googleButton: {
+    backgroundColor: '#cc2727',
+    width: '65%',
+    padding: 8,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  googleText: {
+    fontSize: 20,
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
 
   // registerAlternativeText
   registerAlternativeText: {
     textAlign: 'center',
+    fontSize: 20,
+    fontWeight: '400',
   },
 
   // Inputs
   inputs: {
+    flex: 1,
     padding: 12,
   },
   inputField: {
@@ -103,7 +168,9 @@ const styles = StyleSheet.create({
 
   // InteractionButtons (Login/dont have account)
   interactionButtons: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'space-around',
   },
   registerButton: {
     backgroundColor: '#0909ff',
@@ -119,5 +186,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   goToLoginButton: {},
-  goToLoginText: {},
+  goToLoginText: {
+    fontSize: 16,
+    color: '#545454',
+    textDecorationLine: 'underline',
+  },
 });
