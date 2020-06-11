@@ -5,7 +5,8 @@ import {
   View,
   TouchableOpacity,
   Keyboard,
-  KeyboardAvoidingView,
+  Modal,
+  ActivityIndicator,
   ToastAndroid,
   TextInput,
   StatusBar,
@@ -13,57 +14,75 @@ import {
 } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
+import AuthHeader from '../components/AuthHeader';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function Resgister({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
   function createUser() {
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        Keyboard.dismiss();
-        ToastAndroid.show(
-          'Novo usuário criado, faça seu login!',
-          ToastAndroid.LONG,
-          ToastAndroid.BOTTOM,
-        );
-        setEmail('');
-        setPassword('');
-        navigation.navigate('Login');
-      })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          alert('Esse usuario ja existe');
-          setEmail('');
-          setPassword('');
-        }
-
-        if (error.code === 'auth/invalid-email') {
-          alert('Esse email é inválido, tente outro');
-          setEmail('');
-          setPassword('');
-        }
-
-        if (error.code === 'auth/network-request-failed') {
-          Alert.alert(
-            'Sem conexão',
-            'Parece que o seu aparelho não está conectado à rede, conecte-se e tente novamente',
+    if (email.length > 0 && password.length > 0) {
+      Keyboard.dismiss();
+      setModalOpen(true);
+      auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          ToastAndroid.show(
+            'Novo usuário criado, faça seu login!',
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
           );
-        }
-      });
+          setEmail('');
+          setPassword('');
+          setModalOpen(false);
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            setModalOpen(false);
+            Alert.alert(
+              'Usuário existente',
+              'Um usuário com esse email já existe',
+            );
+            setEmail('');
+            setPassword('');
+          }
+
+          if (error.code === 'auth/invalid-email') {
+            setModalOpen(false);
+            Alert.alert('Email inválido', 'Esse email é inválido, tente outro');
+            setEmail('');
+            setPassword('');
+          }
+
+          if (error.code === 'auth/network-request-failed') {
+            setModalOpen(false);
+
+            Alert.alert(
+              'Sem conexão',
+              'Parece que o seu aparelho não está conectado à rede, conecte-se e tente novamente',
+            );
+          }
+        });
+    } else {
+      Alert.alert(
+        'Campos obrigatórios',
+        'Você precisa completar todos os campos antes de prosseguir!',
+      );
+    }
   }
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#c75258ab" />
+      <AuthHeader title="Cadastro" />
       <Text style={styles.inputTitles}>Digite seu email:</Text>
       <TextInput
         keyboardType="email-address"
         placeholder="Email"
         autoCapitalize="none"
         style={styles.input}
-        autoFocus
         value={email}
         onChangeText={text => setEmail(text)}
       />
@@ -81,6 +100,21 @@ export default function Resgister({ navigation }) {
       <TouchableOpacity style={styles.registerButton} onPress={createUser}>
         <Text style={styles.touchText}>Completar registro</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.googleButton}>
+        <Icon name="google" color="#FDFDFD" size={22} />
+        <Text style={styles.googleText}>Ou use sua conta Google</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={modalOpen}
+        animationType="fade"
+        transparent
+        statusBarTranslucent>
+        <View style={styles.modalContainer}>
+          <ActivityIndicator size="large" />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -97,9 +131,8 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingVertical: 6,
     paddingLeft: 12,
+    marginBottom: 12,
     fontSize: 18,
-    // borderWidth: 2,
-    // borderColor: '#505050',
     borderRadius: 10,
     alignSelf: 'center',
     marginTop: 8,
@@ -108,14 +141,13 @@ const styles = StyleSheet.create({
   inputTitles: {
     fontSize: 20,
     color: '#202020',
-    marginTop: 14,
     paddingLeft: '10%',
   },
   registerButton: {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#cc6166',
-    width: '70%',
+    width: '75%',
     alignSelf: 'center',
     borderRadius: 14,
     marginTop: 18,
@@ -126,5 +158,28 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFF',
     paddingVertical: 10,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    backgroundColor: '#cc0000',
+    width: '70%',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    alignSelf: 'center',
+    marginTop: 14,
+    padding: 12,
+    borderRadius: 12,
+    elevation: 2,
+  },
+  googleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FDFDFD',
+  },
+  modalContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#00000070',
   },
 });

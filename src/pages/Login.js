@@ -5,87 +5,110 @@ import {
   View,
   TouchableOpacity,
   Keyboard,
+  ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
+  Modal,
   TextInput,
   StatusBar,
 } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
+import AuthHeader from '../components/AuthHeader';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
   function login() {
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        Keyboard.dismiss();
-        alert(`Login com: \nEmail: ${email}\nSenha: ${password}`);
-        navigation.navigate('Main', { user: email, password });
-      })
-      .catch(error => {
-        if (error.code === 'auth/user-not-found') {
-          Alert.alert(
-            'Usuário inválido',
-            'Esse usuário não existe, faça o seu cadastro!',
-          );
-          navigation.navigate('Register');
-        }
-        if (error.code === 'auth/invalid-email') {
-          Alert.alert(
-            'Email inválido',
-            'Esse email é inválido, por favor, tente novamente!',
-          );
-        }
-        console.log(error);
-      });
+    if (email.length > 0 && password.length > 0) {
+      setModalOpen(true);
+      auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          Keyboard.dismiss();
+          setModalOpen(false);
+        })
+        .catch(error => {
+          if (error.code === 'auth/user-not-found') {
+            setModalOpen(false);
+            Alert.alert(
+              'Usuário inválido',
+              'Esse usuário não existe, faça o seu cadastro!',
+            );
+            navigation.navigate('Register');
+          }
+          if (error.code === 'auth/invalid-email') {
+            setModalOpen(false);
+            Alert.alert(
+              'Email inválido',
+              'Esse email é inválido, por favor, tente novamente!',
+            );
+            setEmail('');
+            setPassword('');
+          }
+          if (error.code === 'auth/wrong-password') {
+            setModalOpen(false);
+            Alert.alert(
+              'Dados incorretos',
+              'A senha ou o email estão incorretos, por favor tente novamente',
+            );
+            setEmail('');
+            setPassword('');
+          }
+          console.log(error);
+        });
+    } else {
+      Alert.alert(
+        'Campos obrigatórios',
+        'Você precisa completar os campos acima antes de prosseguir!',
+      );
+    }
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.textArea}>
-        <Text>Logo</Text>
-        <Text style={styles.doLoginText}>Faça o seu</Text>
-        <Text style={styles.loginWord}>Login</Text>
-      </View>
-      <View style={styles.interactionArea}>
-        <View style={styles.googleLogin}>
-          <TouchableOpacity style={styles.googleButton}>
-            <Text style={styles.googleText}>Use sua conta Google</Text>
-          </TouchableOpacity>
-        </View>
+      <StatusBar backgroundColor="#c75258ab" />
+      <AuthHeader title="Login" />
+      <Text style={styles.inputTitles}>Digite seu email:</Text>
+      <TextInput
+        keyboardType="email-address"
+        placeholder="Email"
+        autoCapitalize="none"
+        style={styles.input}
+        value={email}
+        onChangeText={text => setEmail(text)}
+      />
 
-        <Text style={styles.loginAlternativeText}>Ou</Text>
+      <Text style={styles.inputTitles}>Digite a senha:</Text>
+      <TextInput
+        placeholder="Senha"
+        autoCapitalize="none"
+        secureTextEntry
+        style={styles.input}
+        value={password}
+        onChangeText={text => setPassword(text)}
+      />
 
-        <View style={styles.inputs}>
-          <TextInput
-            placeholder="Email"
-            keyboardType="email-address"
-            style={styles.inputField}
-            value={email}
-            onChangeText={text => setEmail(text)}
-          />
-          <TextInput
-            placeholder="Senha"
-            secureTextEntry={true}
-            style={styles.inputField}
-            value={password}
-            onChangeText={text => setPassword(text)}
-          />
+      <TouchableOpacity style={styles.loginButton} onPress={login}>
+        <Text style={styles.touchText}>Entrar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.googleButton}>
+        <Icon name="google" color="#FDFDFD" size={22} />
+        <Text style={styles.googleText}>Ou use sua conta Google</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={modalOpen}
+        animationType="fade"
+        transparent
+        statusBarTranslucent>
+        <View style={styles.modalContainer}>
+          <ActivityIndicator size="large" />
         </View>
-        <View style={styles.interactionButtons}>
-          <TouchableOpacity style={styles.loginButton} onPress={login}>
-            <Text style={styles.loginButtonText}>Entrar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.goToRegisterButton}
-            onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.goToRegisterText}>Não tenho conta!</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </Modal>
     </View>
   );
 }
@@ -93,97 +116,64 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#cc616655',
   },
-
-  // Texts
-  textArea: {
-    flex: 3,
-    justifyContent: 'flex-end',
-    margin: 4,
-    padding: 10,
-  },
-  doLoginText: {
-    fontSize: 26,
-    fontWeight: '700',
-  },
-  loginWord: {
-    fontSize: 72,
-    fontWeight: 'bold',
-  },
-
-  // InteractionArea
-  interactionArea: {
-    flex: 7,
-    justifyContent: 'space-around',
-  },
-
-  // InteractionArea - googleLogin
-  googleLogin: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  googleButton: {
-    backgroundColor: '#cc2727',
-    width: '65%',
-    padding: 8,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  googleText: {
-    fontSize: 20,
-    color: '#FFF',
-    fontWeight: 'bold',
-  },
-
-  // loginAlternativeText
-  loginAlternativeText: {
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: '400',
-  },
-
-  // Inputs
-  inputs: {
-    padding: 12,
-    flex: 1,
-  },
-  inputField: {
-    borderWidth: 2,
-    borderColor: '#757575',
-    borderRadius: 12,
-    margin: 6,
+  input: {
+    backgroundColor: '#FFF',
     width: '80%',
-    alignSelf: 'center',
+    textAlignVertical: 'center',
     padding: 4,
+    paddingVertical: 6,
     paddingLeft: 12,
-    fontSize: 22,
+    marginBottom: 12,
+    fontSize: 18,
+    borderRadius: 10,
+    alignSelf: 'center',
+    marginTop: 8,
+    elevation: 2,
   },
-
-  // InteractionButtons (Login/dont have account)
-  interactionButtons: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
+  inputTitles: {
+    fontSize: 20,
+    color: '#202020',
+    paddingLeft: '10%',
   },
   loginButton: {
-    backgroundColor: '#0909ff',
-    width: '60%',
-    padding: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
+    backgroundColor: '#cc6166',
+    width: '75%',
+    alignSelf: 'center',
+    borderRadius: 14,
+    marginTop: 18,
+    elevation: 3,
   },
-  loginButtonText: {
-    color: '#FFF',
+  touchText: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#FFF',
+    paddingVertical: 10,
   },
-  goToRegisterButton: {},
-  goToRegisterText: {
+  googleButton: {
+    flexDirection: 'row',
+    backgroundColor: '#cc0000',
+    width: '70%',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    alignSelf: 'center',
+    marginTop: 14,
+    padding: 12,
+    borderRadius: 12,
+    elevation: 2,
+  },
+  googleText: {
     fontSize: 16,
-    color: '#545454',
-    textDecorationLine: 'underline',
+    fontWeight: 'bold',
+    color: '#FDFDFD',
+  },
+  modalContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#00000070',
   },
 });

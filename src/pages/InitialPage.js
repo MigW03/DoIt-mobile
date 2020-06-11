@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import auth from '@react-native-firebase/auth';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 export default function InitialPage({ navigation }) {
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
       <View style={styles.logo}>
         <Text>Logo</Text>
       </View>
@@ -41,6 +43,7 @@ export default function InitialPage({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFF',
   },
   chooseView: {
     padding: 12,
@@ -71,6 +74,6 @@ const styles = StyleSheet.create({
   },
   logo: {
     height: '50%',
-    backgroundColor: '#cecece',
+    backgroundColor: '#ddd',
   },
 });
