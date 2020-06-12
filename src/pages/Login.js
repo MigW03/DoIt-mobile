@@ -12,6 +12,13 @@ import {
   StatusBar,
 } from 'react-native';
 
+import { GoogleSignin } from '@react-native-community/google-signin';
+
+GoogleSignin.configure({
+  webClientId:
+    '95028475262-oqkc3qol9htp1pfufmrdckggimp2h39g.apps.googleusercontent.com',
+});
+
 import auth from '@react-native-firebase/auth';
 import AuthHeader from '../components/AuthHeader';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -67,6 +74,13 @@ export default function Login({ navigation }) {
     }
   }
 
+  async function googleLogin() {
+    const { idToken } = await GoogleSignin.signIn();
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    return auth().signInWithCredential(googleCredential);
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#c75258ab" />
@@ -95,10 +109,18 @@ export default function Login({ navigation }) {
         <Text style={styles.touchText}>Entrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.googleButton}>
+      {/* <TouchableOpacity
+        style={styles.googleButton}
+        onPress={() =>
+          googleLogin()
+            .then(() => console.log('Logado com google'))
+            .catch(error => {
+              console.log(error);
+            })
+        }>
         <Icon name="google" color="#FDFDFD" size={22} />
         <Text style={styles.googleText}>Ou use sua conta Google</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <Modal
         visible={modalOpen}

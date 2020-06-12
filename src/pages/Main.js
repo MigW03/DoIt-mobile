@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Keyboard,
 } from 'react-native';
+import MainHeader from '../components/MainHeader';
 
 import auth from '@react-native-firebase/auth';
 
@@ -29,6 +30,7 @@ export default function Main({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
+      <MainHeader />
       <Text>Main screen</Text>
       <Text>{user}</Text>
       <TouchableOpacity onPress={logout}>
@@ -43,6 +45,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FDFDFD',
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
   },
 });

@@ -13,6 +13,13 @@ import {
   Alert,
 } from 'react-native';
 
+import { GoogleSignin } from '@react-native-community/google-signin';
+
+GoogleSignin.configure({
+  webClientId:
+    '95028475262-oqkc3qol9htp1pfufmrdckggimp2h39g.apps.googleusercontent.com',
+});
+
 import auth from '@react-native-firebase/auth';
 import AuthHeader from '../components/AuthHeader';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -30,8 +37,8 @@ export default function Resgister({ navigation }) {
         .createUserWithEmailAndPassword(email, password)
         .then(() => {
           ToastAndroid.show(
-            'Novo usuário criado, faça seu login!',
-            ToastAndroid.LONG,
+            'Novo usuário criado com sucesso!',
+            ToastAndroid.SHORT,
             ToastAndroid.BOTTOM,
           );
           setEmail('');
@@ -73,6 +80,13 @@ export default function Resgister({ navigation }) {
     }
   }
 
+  async function createGoogleUser() {
+    const { idToken } = await GoogleSignin.signIn();
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    return auth().signInWithCredential(googleCredential);
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#c75258ab" />
@@ -101,10 +115,18 @@ export default function Resgister({ navigation }) {
         <Text style={styles.touchText}>Completar registro</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.googleButton}>
+      {/* <TouchableOpacity
+        style={styles.googleButton}
+        onPress={() =>
+          createGoogleUser()
+            .then(() => console.log('Logado com google'))
+            .catch(error => {
+              console.log(error);
+            })
+        }>
         <Icon name="google" color="#FDFDFD" size={22} />
         <Text style={styles.googleText}>Ou use sua conta Google</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <Modal
         visible={modalOpen}

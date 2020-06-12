@@ -25,12 +25,12 @@ export default function Routes() {
   if (user) {
     return (
       <Stack.Navigator initialRouteName="Main">
+        <Stack.Screen name="NewToDo" component={NewToDo} />
         <Stack.Screen
           name="Main"
           component={Main}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="NewToDo" component={NewToDo} />
       </Stack.Navigator>
     );
   } else {
