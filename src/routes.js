@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import Main from './pages/Main';
-import NewToDo from './pages/NewToDo';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import InitialPage from './pages/InitialPage';
@@ -24,8 +23,7 @@ export default function Routes() {
 
   if (user) {
     return (
-      <Stack.Navigator initialRouteName="Main">
-        <Stack.Screen name="NewToDo" component={NewToDo} />
+      <Stack.Navigator>
         <Stack.Screen
           name="Main"
           component={Main}

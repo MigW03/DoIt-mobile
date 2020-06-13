@@ -7,7 +7,7 @@ export default function MainHeader(props) {
   return (
     <View style={styles.container}>
       <Text style={styles.headerTitle}>DoIt</Text>
-      <TouchableOpacity style={styles.touch} onPress={props.onPress}>
+      <TouchableOpacity style={styles.touch} onPress={props.onIconPress}>
         <Icon name="user" size={28} color="#cc6166" />
       </TouchableOpacity>
     </View>
@@ -24,12 +24,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 30,
+    fontFamily: 'RobotoMono-Bold',
     color: '#cc6166',
   },
   touch: {
-    // backgroundColor: '#cc6166',
     alignItems: 'center',
     justifyContent: 'center',
     height: 50,

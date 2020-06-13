@@ -2,10 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-export default function AddItemFAB() {
+export default function AddItemFAB(props) {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.touch}>
+      <TouchableOpacity style={styles.touch} onPress={props.onPress}>
         <Icon name="plus" size={30} color="#FDFDFD" />
       </TouchableOpacity>
     </View>
@@ -14,18 +14,18 @@ export default function AddItemFAB() {
 
 const styles = StyleSheet.create({
   container: {
-    height: 67,
-    width: 67,
+    height: 65,
+    width: 65,
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 25,
+    right: 25,
   },
   touch: {
     flex: 1,
-    borderRadius: 18,
+    borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'blue',
+    backgroundColor: '#cc6166',
     elevation: 5,
   },
 });
