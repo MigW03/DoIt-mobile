@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
+  Alert,
   Text,
   StatusBar,
   Modal,
@@ -24,7 +25,7 @@ import CloseIcon from 'react-native-vector-icons/MaterialIcons';
 import auth from '@react-native-firebase/auth';
 
 export default function Main({ navigation }) {
-  let user = auth().currentUser.email;
+  let userEmail = auth().currentUser.email;
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [newItemModal, setNewItemModal] = useState(false);
   const [inputData, setInputData] = useState('');
@@ -40,6 +41,24 @@ export default function Main({ navigation }) {
     auth()
       .signOut()
       .then(console.log('Desconectado'));
+  }
+
+  function resetPassword() {
+    auth()
+      .sendPasswordResetEmail(userEmail)
+      .then(() => {
+        Alert.alert(
+          'Email enviado',
+          'Um email foi enviado para você redefinir a sua senha.',
+        );
+        setUserModalOpen(false);
+      })
+      .catch(() => {
+        Alert.alert(
+          'Opps!!',
+          'Houve um erro para redefinir a sua senha, por favor, tente novamente!',
+        );
+      });
   }
 
   function addItem() {
@@ -103,8 +122,10 @@ export default function Main({ navigation }) {
             </View>
             <View style={styles.userDataView}>
               <Text style={styles.emailTitle}>Email:</Text>
-              <Text style={styles.userEmail}>{user}</Text>
-              <TouchableOpacity style={styles.resetPasswordButton}>
+              <Text style={styles.userEmail}>{userEmail}</Text>
+              <TouchableOpacity
+                style={styles.resetPasswordButton}
+                onPress={resetPassword}>
                 <Text style={styles.resetPasswordText}>Redefinir senha</Text>
               </TouchableOpacity>
 
