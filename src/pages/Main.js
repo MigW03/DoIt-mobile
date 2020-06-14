@@ -73,8 +73,6 @@ export default function Main({ navigation }) {
 
   function deleteItem(key) {
     setListData(listData.filter(item => item.key !== key));
-
-    ordenateList(listData);
   }
 
   function ordenateList(arrayToUse) {
