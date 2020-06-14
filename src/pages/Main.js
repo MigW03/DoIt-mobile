@@ -38,9 +38,7 @@ export default function Main({ navigation }) {
 
   function logout() {
     setUserModalOpen(false);
-    auth()
-      .signOut()
-      .then(console.log('Desconectado'));
+    auth().signOut();
   }
 
   function resetPassword() {
@@ -69,10 +67,27 @@ export default function Main({ navigation }) {
     };
 
     listData.unshift(newItem);
+
+    ordenateList(listData);
   }
 
   function deleteItem(key) {
     setListData(listData.filter(item => item.key !== key));
+
+    ordenateList(listData);
+  }
+
+  function ordenateList(arrayToUse) {
+    let trueArray = arrayToUse.filter(item => {
+      return item.important === true;
+    });
+    let falseArray = arrayToUse.filter(item => {
+      return item.important === false;
+    });
+
+    let newArray = trueArray.concat(falseArray);
+
+    setListData(newArray);
   }
 
   return (
@@ -99,6 +114,9 @@ export default function Main({ navigation }) {
             isImportant={item.important ? 'orange' : '#bfbfbf90'}
             starPress={() => {
               item.important = !item.important;
+              setListData([...listData]);
+
+              ordenateList(listData);
             }}
             deletePress={() => deleteItem(item.key)}
           />
@@ -117,7 +135,7 @@ export default function Main({ navigation }) {
         <View style={styles.userModal}>
           <View style={styles.userModalContent}>
             <View style={styles.modalUserIconView}>
-              <Icon name="user" size={50} color="#9a9a9a" />
+              <Icon name="user" size={50} color="#989898" />
               <Text style={styles.userModalTitle}>Sua conta</Text>
             </View>
             <View style={styles.userDataView}>
@@ -210,7 +228,7 @@ const styles = StyleSheet.create({
   },
   userModal: {
     flex: 1,
-    backgroundColor: '#23232364',
+    backgroundColor: '#23232377',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -231,7 +249,7 @@ const styles = StyleSheet.create({
   userModalTitle: {
     fontSize: 18,
     fontFamily: 'RobotoMono-Bold',
-    color: '#9a9a9a',
+    color: '#989898',
   },
   userDataView: {
     flex: 3,
@@ -259,6 +277,7 @@ const styles = StyleSheet.create({
   },
   resetPasswordText: {
     color: '#656565',
+    fontSize: 15,
     fontFamily: 'RobotoMono-Regular',
   },
   logoutButton: {
