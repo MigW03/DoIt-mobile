@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 
 import { GoogleSignin } from '@react-native-community/google-signin';
+import firestore from '@react-native-firebase/firestore';
 
 GoogleSignin.configure({
   webClientId:
@@ -33,6 +34,12 @@ export default function Resgister({ navigation }) {
     if (email.length > 0 && password.length > 0) {
       Keyboard.dismiss();
       setModalOpen(true);
+      firestore()
+        .collection('users')
+        .doc(email)
+        .set({
+          list: [],
+        });
       auth()
         .createUserWithEmailAndPassword(email, password)
         .then(() => {

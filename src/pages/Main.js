@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -23,6 +23,7 @@ import LogoutIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CloseIcon from 'react-native-vector-icons/MaterialIcons';
 
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 export default function Main({ navigation }) {
   let userEmail = auth().currentUser.email;
@@ -30,11 +31,17 @@ export default function Main({ navigation }) {
   const [newItemModal, setNewItemModal] = useState(false);
   const [inputData, setInputData] = useState('');
   const [switchValue, setSwitchValue] = useState(false);
-  const [listData, setListData] = useState([
-    { title: 'oi', key: '0', important: true },
-    { title: 'cm vai', key: '1', important: false },
-    { title: 'tchau', key: '2', important: false },
-  ]);
+  const [listData, setListData] = useState([]);
+
+  useEffect(() => {
+    firestore()
+      .collection('users')
+      .doc(userEmail)
+      .onSnapshot(data => {
+        let retrievedList = data.data().list;
+        ordenateList(retrievedList);
+      });
+  }, []);
 
   function logout() {
     setUserModalOpen(false);
@@ -59,20 +66,32 @@ export default function Main({ navigation }) {
       });
   }
 
-  function addItem() {
-    let newItem = {
-      title: inputData,
-      important: switchValue,
-      key: inputData + Math.random().toString(),
-    };
+  async function addItem() {
+    if (inputData.length > 0) {
+      let list = listData;
+      let newItem = {
+        title: inputData,
+        important: switchValue,
+        key: inputData + Math.random().toString(),
+      };
 
-    listData.unshift(newItem);
-
-    ordenateList(listData);
+      list.unshift(newItem);
+      ordenateList(list);
+      setNewItemModal(false);
+      saveToFirebase(list);
+    } else {
+      Alert.alert(
+        'Digite algo',
+        'Você precisa digitar algo antes de prosseguir!!',
+      );
+    }
   }
 
   function deleteItem(key) {
-    setListData(listData.filter(item => item.key !== key));
+    let newList = listData.filter(item => item.key !== key);
+
+    setListData(newList);
+    saveToFirebase(newList);
   }
 
   function ordenateList(arrayToUse) {
@@ -82,10 +101,19 @@ export default function Main({ navigation }) {
     let falseArray = arrayToUse.filter(item => {
       return item.important === false;
     });
-
     let newArray = trueArray.concat(falseArray);
-
     setListData(newArray);
+
+    // saveToFirebase(newArray);
+  }
+
+  function saveToFirebase(dataToSave) {
+    firestore()
+      .collection('users')
+      .doc(userEmail)
+      .update({
+        list: dataToSave,
+      });
   }
 
   return (
@@ -113,8 +141,8 @@ export default function Main({ navigation }) {
             starPress={() => {
               item.important = !item.important;
               setListData([...listData]);
-
               ordenateList(listData);
+              saveToFirebase([...listData]);
             }}
             deletePress={() => deleteItem(item.key)}
           />
@@ -177,7 +205,6 @@ export default function Main({ navigation }) {
               onPress={() => {
                 Keyboard.dismiss();
                 addItem();
-                setNewItemModal(false);
                 setInputData('');
                 setSwitchValue(false);
               }}>
