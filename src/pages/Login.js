@@ -10,6 +10,7 @@ import {
   Modal,
   TextInput,
   StatusBar,
+  ToastAndroid,
 } from 'react-native';
 
 import { GoogleSignin } from '@react-native-community/google-signin';
@@ -61,8 +62,15 @@ export default function Login({ navigation }) {
               'Dados incorretos',
               'A senha ou o email estão incorretos, por favor tente novamente',
             );
-            setEmail('');
             setPassword('');
+          }
+
+          if (error.code === 'auth/network-request-failed') {
+            setModalOpen(false);
+            Alert.alert(
+              'Sem conexão',
+              'Parece que o seu aparelho não está conectado à rede, conecte-se e tente novamente.',
+            );
           }
           console.log(error);
         });
@@ -79,6 +87,67 @@ export default function Login({ navigation }) {
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
     return auth().signInWithCredential(googleCredential);
+  }
+
+  function forgotPassword() {
+    setModalOpen(true);
+
+    if (!email) {
+      return (
+        setModalOpen(false),
+        Alert.alert(
+          'Digite o seu email',
+          'Para que possa redefinir a sua senha, digite seu email no campo destinado ao email.',
+        )
+      );
+    }
+
+    auth()
+      .sendPasswordResetEmail(email)
+      .then(() => {
+        setModalOpen(false);
+        ToastAndroid.show('Email enviado com sucesso', ToastAndroid.LONG);
+      })
+      .catch(error => {
+        if (error.code === 'auth/invalid-email') {
+          return (
+            setModalOpen(false),
+            Alert.alert(
+              'Email inválido',
+              'O endereço de email que você digitou é inválido, digite novamente',
+            ),
+            setEmail('')
+          );
+        }
+
+        if (error.code === 'auth/user-not-found') {
+          return (
+            setModalOpen(false),
+            Alert.alert(
+              'Usuário não cadastrado',
+              'Nenhum usuário com esse email foi encontrado, você será encaminhado ara a página de registro',
+            ),
+            setEmail(''),
+            navigation.navigate('Register')
+          );
+        }
+
+        if (error.code === 'auth/network-request-failed') {
+          return (
+            setModalOpen(false),
+            Alert.alert(
+              'Sem conexão',
+              'Parece que o seu aparelho não está conectado à rede, conecte-se e tente novamente',
+            )
+          );
+        }
+
+        Alert.alert(
+          'Houve um problema',
+          'Ocorreu um probelma ao enviar o email, por favor, tente novamente!',
+        );
+        console.log(error);
+      });
   }
 
   return (
@@ -107,6 +176,12 @@ export default function Login({ navigation }) {
 
       <TouchableOpacity style={styles.loginButton} onPress={login}>
         <Text style={styles.touchText}>Entrar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.forgotPasswordButton}
+        onPress={forgotPassword}>
+        <Text style={styles.forgotPasswordText}> Esqueci minha senha! </Text>
       </TouchableOpacity>
 
       {/* <TouchableOpacity
@@ -174,6 +249,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFF',
     paddingVertical: 10,
+  },
+  forgotPasswordButton: {
+    marginTop: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  forgotPasswordText: {
+    fontSize: 15,
+    color: '#202020',
+    textDecorationLine: 'underline',
   },
   googleButton: {
     flexDirection: 'row',

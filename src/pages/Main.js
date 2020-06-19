@@ -11,6 +11,7 @@ import {
   Keyboard,
   TextInput,
   Switch,
+  ToastAndroid,
 } from 'react-native';
 
 import MainHeader from '../components/MainHeader';
@@ -92,6 +93,8 @@ export default function Main({ navigation }) {
 
     setListData(newList);
     saveToFirebase(newList);
+
+    ToastAndroid.show('Tarefa removida com sucesso!', ToastAndroid.SHORT);
   }
 
   function ordenateList(arrayToUse) {
@@ -103,8 +106,6 @@ export default function Main({ navigation }) {
     });
     let newArray = trueArray.concat(falseArray);
     setListData(newArray);
-
-    // saveToFirebase(newArray);
   }
 
   function saveToFirebase(dataToSave) {
@@ -289,6 +290,7 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: 16,
     fontFamily: 'RobotoMono-Regular',
+    maxWidth: '97%',
   },
   resetPasswordButton: {
     width: '60%',
