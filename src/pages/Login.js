@@ -44,8 +44,17 @@ export default function Login({ navigation }) {
             Alert.alert(
               'Usuário inválido',
               'Esse usuário não existe, faça o seu cadastro!',
+              [
+                { text: 'Digitar novamente' },
+                {
+                  text: 'Ir para página de cadastro',
+                  onPress: () => {
+                    setEmail('');
+                    navigation.navigate('Register');
+                  },
+                },
+              ],
             );
-            navigation.navigate('Register');
           }
           if (error.code === 'auth/invalid-email') {
             setModalOpen(false);
