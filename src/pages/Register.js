@@ -141,7 +141,7 @@ export default function Resgister({ navigation }) {
         transparent
         statusBarTranslucent>
         <View style={styles.modalContainer}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color="#cc6166" />
         </View>
       </Modal>
     </View>
@@ -209,6 +209,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00000070',
+    backgroundColor: '#00000085',
   },
 });

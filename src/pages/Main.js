@@ -35,13 +35,15 @@ export default function Main({ navigation }) {
   const [listData, setListData] = useState([]);
 
   useEffect(() => {
-    firestore()
+    const subscriber = firestore()
       .collection('users')
       .doc(userEmail)
       .onSnapshot(data => {
         let retrievedList = data.data().list;
         ordenateList(retrievedList);
       });
+
+    return () => subscriber();
   }, []);
 
   function logout() {
