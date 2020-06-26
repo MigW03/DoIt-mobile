@@ -40,47 +40,61 @@ export default function Login({ navigation }) {
         })
         .catch(error => {
           if (error.code === 'auth/user-not-found') {
-            setModalOpen(false);
-            Alert.alert(
-              'Usuário inválido',
-              'Esse usuário não existe, faça o seu cadastro!',
-              [
-                { text: 'Digitar novamente' },
-                {
-                  text: 'Ir para página de cadastro',
-                  onPress: () => {
-                    setEmail('');
-                    navigation.navigate('Register');
+            return (
+              setModalOpen(false),
+              Alert.alert(
+                'Usuário inválido',
+                'Esse usuário não existe, faça o seu cadastro!',
+                [
+                  { text: 'Digitar novamente' },
+                  {
+                    text: 'Ir para página de cadastro',
+                    onPress: () => {
+                      setEmail('');
+                      navigation.navigate('Register');
+                    },
                   },
-                },
-              ],
+                ],
+              )
             );
           }
           if (error.code === 'auth/invalid-email') {
-            setModalOpen(false);
-            Alert.alert(
-              'Email inválido',
-              'Esse email é inválido, por favor, tente novamente!',
+            return (
+              setModalOpen(false),
+              Alert.alert(
+                'Email inválido',
+                'Esse email é inválido, por favor, tente novamente!',
+              ),
+              setEmail(''),
+              setPassword('')
             );
-            setEmail('');
-            setPassword('');
           }
           if (error.code === 'auth/wrong-password') {
-            setModalOpen(false);
-            Alert.alert(
-              'Dados incorretos',
-              'A senha ou o email estão incorretos, por favor tente novamente',
+            return (
+              setModalOpen(false),
+              Alert.alert(
+                'Dados incorretos',
+                'A senha ou o email estão incorretos, por favor tente novamente',
+              ),
+              setPassword('')
             );
-            setPassword('');
           }
 
           if (error.code === 'auth/network-request-failed') {
-            setModalOpen(false);
-            Alert.alert(
-              'Sem conexão',
-              'Parece que o seu aparelho não está conectado à rede, conecte-se e tente novamente.',
+            return (
+              setModalOpen(false),
+              Alert.alert(
+                'Sem conexão',
+                'Parece que o seu aparelho não está conectado à rede, conecte-se e tente novamente.',
+              )
             );
           }
+
+          setModalOpen(false);
+          Alert.alert(
+            'Opps',
+            'Houve um erro para realizar seu login, por favor tente novamente!',
+          );
           console.log(error);
         });
     } else {

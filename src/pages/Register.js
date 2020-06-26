@@ -34,15 +34,15 @@ export default function Resgister({ navigation }) {
     if (email.length > 0 && password.length > 0) {
       Keyboard.dismiss();
       setModalOpen(true);
-      firestore()
-        .collection('users')
-        .doc(email)
-        .set({
-          list: [],
-        });
       auth()
         .createUserWithEmailAndPassword(email, password)
         .then(() => {
+          firestore()
+            .collection('users')
+            .doc(email)
+            .set({
+              list: [],
+            });
           ToastAndroid.show(
             'Novo usuário criado com sucesso!',
             ToastAndroid.SHORT,
@@ -53,31 +53,57 @@ export default function Resgister({ navigation }) {
           setModalOpen(false);
         })
         .catch(error => {
+          console.log(error);
           if (error.code === 'auth/email-already-in-use') {
-            setModalOpen(false);
-            Alert.alert(
-              'Usuário existente',
-              'Um usuário com esse email já existe',
+            return (
+              setModalOpen(false),
+              Alert.alert(
+                'Usuário existente',
+                'Um usuário com esse email já existe',
+              ),
+              setEmail(''),
+              setPassword('')
             );
-            setEmail('');
-            setPassword('');
           }
 
           if (error.code === 'auth/invalid-email') {
-            setModalOpen(false);
-            Alert.alert('Email inválido', 'Esse email é inválido, tente outro');
-            setEmail('');
-            setPassword('');
+            return (
+              setModalOpen(false),
+              Alert.alert(
+                'Email inválido',
+                'Esse email é inválido, tente outro',
+              ),
+              setEmail(''),
+              setPassword('')
+            );
           }
 
           if (error.code === 'auth/network-request-failed') {
-            setModalOpen(false);
-
-            Alert.alert(
-              'Sem conexão',
-              'Parece que o seu aparelho não está conectado à rede, conecte-se e tente novamente',
+            return (
+              setModalOpen(false),
+              Alert.alert(
+                'Sem conexão',
+                'Parece que o seu aparelho não está conectado à rede, conecte-se e tente novamente',
+              )
             );
           }
+
+          if (error.code === 'auth/weak-password') {
+            return (
+              setModalOpen(false),
+              Alert.alert(
+                'Senha fraca',
+                'A sua senha deve ter pelo menos 6 caracteres',
+              ),
+              setPassword('')
+            );
+          }
+
+          setModalOpen(false);
+          Alert.alert(
+            'Erro',
+            'Houve um problema ao criar a sua conta, por favor tente novamente!',
+          );
         });
     } else {
       Alert.alert(
