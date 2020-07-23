@@ -131,7 +131,12 @@ export default function Main({ navigation }) {
             display: listData.length > 0 ? 'flex' : 'none',
           },
         ]}>
-        Você tem {listData.length} tarefas
+        Você tem
+        <Text style={{ color: '#202020', fontSize: 18 }}>
+          {' '}
+          {listData.length}{' '}
+        </Text>
+        tarefas
       </Text>
       <FlatList
         style={styles.flatList}

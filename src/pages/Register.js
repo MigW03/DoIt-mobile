@@ -41,7 +41,25 @@ export default function Resgister({ navigation }) {
             .collection('users')
             .doc(email)
             .set({
-              list: [],
+              list: [
+                {
+                  title: 'Bem vindo(a) ao DoIt, aproveite o aplicativo!!',
+                  key: 'welcome1234',
+                  important: true,
+                },
+                {
+                  title:
+                    'Para marcar uma tarefa como Importante, selecione a opção "Marcar como importante" quando criar uma tarefa, ou clique na estrela ao lado, ela ficará laranja para notas importantes!',
+                  key: 'startTutorial1234',
+                  important: false,
+                },
+                {
+                  title:
+                    'Para deletar uma tarefa, clique na lixeira no lado direito!',
+                  key: 'deleteTutorial1234',
+                  important: false,
+                },
+              ],
             });
           ToastAndroid.show(
             'Novo usuário criado com sucesso!',
@@ -59,7 +77,7 @@ export default function Resgister({ navigation }) {
               setModalOpen(false),
               Alert.alert(
                 'Usuário existente',
-                'Um usuário com esse email já existe',
+                'Um usuário com esse e-mail já existe',
               ),
               setEmail(''),
               setPassword('')
@@ -70,8 +88,8 @@ export default function Resgister({ navigation }) {
             return (
               setModalOpen(false),
               Alert.alert(
-                'Email inválido',
-                'Esse email é inválido, tente outro',
+                'E-mail inválido',
+                'Esse e-mail é inválido, tente outro',
               ),
               setEmail(''),
               setPassword('')
@@ -124,10 +142,10 @@ export default function Resgister({ navigation }) {
     <View style={styles.container}>
       <StatusBar backgroundColor="#c75258ab" />
       <AuthHeader title="Cadastro" />
-      <Text style={styles.inputTitles}>Digite seu email:</Text>
+      <Text style={styles.inputTitles}>Digite seu e-mail:</Text>
       <TextInput
         keyboardType="email-address"
-        placeholder="Email"
+        placeholder="E-mail"
         autoCapitalize="none"
         style={styles.input}
         value={email}
@@ -139,6 +157,8 @@ export default function Resgister({ navigation }) {
         placeholder="Senha"
         autoCapitalize="none"
         secureTextEntry
+        returnKeyType="done"
+        onSubmitEditing={createUser}
         style={styles.input}
         value={password}
         onChangeText={text => setPassword(text)}

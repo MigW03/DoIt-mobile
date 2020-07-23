@@ -31,6 +31,7 @@ export default function Login({ navigation }) {
 
   function login() {
     if (email.length > 0 && password.length > 0) {
+      Keyboard.dismiss();
       setModalOpen(true);
       auth()
         .signInWithEmailAndPassword(email, password)
@@ -62,8 +63,8 @@ export default function Login({ navigation }) {
             return (
               setModalOpen(false),
               Alert.alert(
-                'Email inválido',
-                'Esse email é inválido, por favor, tente novamente!',
+                'E-mail inválido',
+                'Esse e-mail é inválido, por favor, tente novamente!',
               ),
               setEmail(''),
               setPassword('')
@@ -74,7 +75,7 @@ export default function Login({ navigation }) {
               setModalOpen(false),
               Alert.alert(
                 'Dados incorretos',
-                'A senha ou o email estão incorretos, por favor tente novamente',
+                'A senha ou o e-mail estão incorretos, por favor tente novamente',
               ),
               setPassword('')
             );
@@ -119,8 +120,8 @@ export default function Login({ navigation }) {
       return (
         setModalOpen(false),
         Alert.alert(
-          'Digite o seu email',
-          'Para que possa redefinir a sua senha, digite seu email no campo destinado ao email.',
+          'Digite o seu e-mail',
+          'Para que possa redefinir a sua senha, digite seu e-mail no campo destinado ao e-mail.',
         )
       );
     }
@@ -129,15 +130,15 @@ export default function Login({ navigation }) {
       .sendPasswordResetEmail(email)
       .then(() => {
         setModalOpen(false);
-        ToastAndroid.show('Email enviado com sucesso', ToastAndroid.LONG);
+        ToastAndroid.show('E-mail enviado com sucesso', ToastAndroid.LONG);
       })
       .catch(error => {
         if (error.code === 'auth/invalid-email') {
           return (
             setModalOpen(false),
             Alert.alert(
-              'Email inválido',
-              'O endereço de email que você digitou é inválido, digite novamente',
+              'E-mail inválido',
+              'O endereço de e-mail que você digitou é inválido, digite novamente',
             ),
             setEmail('')
           );
@@ -148,7 +149,7 @@ export default function Login({ navigation }) {
             setModalOpen(false),
             Alert.alert(
               'Usuário não cadastrado',
-              'Nenhum usuário com esse email foi encontrado, você será encaminhado ara a página de registro',
+              'Nenhum usuário com esse e-mail foi encontrado, você será encaminhado para a página de registro',
             ),
             setEmail(''),
             navigation.navigate('Register')
@@ -167,7 +168,7 @@ export default function Login({ navigation }) {
 
         Alert.alert(
           'Houve um problema',
-          'Ocorreu um probelma ao enviar o email, por favor, tente novamente!',
+          'Ocorreu um problema ao enviar o e-mail, por favor, tente novamente!',
         );
         console.log(error);
       });
@@ -177,10 +178,10 @@ export default function Login({ navigation }) {
     <View style={styles.container}>
       <StatusBar backgroundColor="#c75258ab" />
       <AuthHeader title="Login" />
-      <Text style={styles.inputTitles}>Digite seu email:</Text>
+      <Text style={styles.inputTitles}>Digite seu e-mail:</Text>
       <TextInput
         keyboardType="email-address"
-        placeholder="Email"
+        placeholder="E-mail"
         autoCapitalize="none"
         style={styles.input}
         value={email}
@@ -192,6 +193,8 @@ export default function Login({ navigation }) {
         placeholder="Senha"
         autoCapitalize="none"
         secureTextEntry
+        returnKeyType="done"
+        onSubmitEditing={login}
         style={styles.input}
         value={password}
         onChangeText={text => setPassword(text)}
