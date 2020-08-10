@@ -11,7 +11,9 @@ export default function ListItem(props) {
         <StarIcon name="star" size={24} color={props.isImportant} />
       </TouchableOpacity>
       <View style={styles.textContainer}>
-        <Text style={styles.itemTitle}>{props.title}</Text>
+        <Text style={[styles.itemTitle, { color: props.textColor }]}>
+          {props.title}
+        </Text>
       </View>
       <TouchableOpacity style={styles.deleteButton} onPress={props.deletePress}>
         <DeleteIcon name="trash-2" color="#c13e45" size={24} />
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontSize: 18,
-    color: '#505050',
+    // color: '#505050',
     fontFamily: 'RobotoMono-Bold',
   },
   deleteButton: {

@@ -23,10 +23,11 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import LogoutIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CloseIcon from 'react-native-vector-icons/MaterialIcons';
 
+import * as Animatable from 'react-native-animatable';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-export default function Main({ navigation }) {
+export default function Main() {
   let userEmail = auth().currentUser.email;
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [newItemModal, setNewItemModal] = useState(false);
@@ -132,7 +133,7 @@ export default function Main({ navigation }) {
           },
         ]}>
         Você tem
-        <Text style={{ color: '#202020', fontSize: 18 }}>
+        <Text style={{ color: '#4b4b4b', fontSize: 18 }}>
           {' '}
           {listData.length}{' '}
         </Text>
@@ -143,17 +144,22 @@ export default function Main({ navigation }) {
         showsVerticalScrollIndicator={false}
         data={listData}
         renderItem={({ item, index }) => (
-          <ListItem
-            title={item.title}
-            isImportant={item.important ? 'orange' : '#bfbfbf90'}
-            starPress={() => {
-              item.important = !item.important;
-              setListData([...listData]);
-              ordenateList(listData);
-              saveToFirebase([...listData]);
-            }}
-            deletePress={() => deleteItem(item.key)}
-          />
+          <Animatable.View
+            animation="fadeInDown"
+            duration={300 + Number(index) * 200}>
+            <ListItem
+              title={item.title}
+              isImportant={item.important ? 'orange' : '#bfbfbf90'}
+              textColor={item.important ? '#454545' : '#707070'}
+              starPress={() => {
+                item.important = !item.important;
+                setListData([...listData]);
+                ordenateList(listData);
+                saveToFirebase([...listData]);
+              }}
+              deletePress={() => deleteItem(item.key)}
+            />
+          </Animatable.View>
         )}
         ListEmptyComponent={() => <EmptyArray />}
         ListFooterComponent={() => <View style={{ height: 100 }} />}
